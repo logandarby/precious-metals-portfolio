@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser, selectName } from "@/store/authSlice";
 import { Button } from "@/components/ui/button";
@@ -18,8 +19,13 @@ export function AppHeader() {
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
-      <p className="font-heading text-sm font-medium">Precious Metals</p>
+    <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
+      <Link
+        to="/portfolios"
+        className="font-heading text-sm font-medium tracking-[0.08em] uppercase"
+      >
+        Precious Metals
+      </Link>
       <div className="flex items-center gap-3">
         {username ? (
           <p className="text-sm text-muted-foreground">{username}</p>

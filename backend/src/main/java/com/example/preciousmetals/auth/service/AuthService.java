@@ -46,10 +46,13 @@ public class AuthService {
         new UsernamePasswordAuthenticationToken(req.email(), req.password()));
   }
 
-  public MeResponse currentUser(Authentication authentication) {
+  public User requireUser(Authentication authentication) {
     return userRepository
         .findByEmail(authentication.getName())
-        .map(MeResponse::from)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+  }
+
+  public MeResponse currentUser(Authentication authentication) {
+    return MeResponse.from(requireUser(authentication));
   }
 }

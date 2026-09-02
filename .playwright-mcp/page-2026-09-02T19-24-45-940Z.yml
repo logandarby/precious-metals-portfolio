@@ -1,0 +1,84 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e19]:
+      - banner [ref=e20]:
+        - link "Precious Metals" [ref=e21] [cursor=pointer]:
+          - /url: /portfolios
+        - generic [ref=e22]:
+          - paragraph [ref=e23]: test
+          - button "Log out" [ref=e24]
+      - generic [ref=e48]:
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - link "Back to portfolios" [ref=e51] [cursor=pointer]:
+              - /url: /portfolios
+            - heading "Test portfolio" [level=1] [ref=e52]
+          - link "Add transactions" [ref=e53] [cursor=pointer]:
+            - /url: /portfolios/46da938c-68b2-4553-b08a-a49cf3b36d2e/transactions/new
+        - generic [ref=e54]:
+          - generic [ref=e56]:
+            - generic [ref=e57]: Value
+            - generic [ref=e58]: $739.40 CAD
+          - generic [ref=e60]:
+            - generic [ref=e61]: Cost basis
+            - generic [ref=e62]: $2.00 CAD
+          - generic [ref=e64]:
+            - generic [ref=e65]: Gain
+            - generic [ref=e66]: $737.40 CAD
+          - generic [ref=e68]:
+            - generic [ref=e69]: Return
+            - generic [ref=e70]: 36,870.00%
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - generic [ref=e73]: Allocation
+            - generic [ref=e74]: By metal, as a share of current value.
+          - generic [ref=e78]:
+            - list [ref=e80]:
+              - listitem [ref=e81]:
+                - img "Gold legend icon" [ref=e82]
+                - text: Gold
+              - listitem [ref=e84]:
+                - img "Silver legend icon" [ref=e85]
+                - text: Silver
+            - application [ref=e87]
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - generic [ref=e99]: Historical value
+            - generic [ref=e100]: Weekly value since the first purchase.
+          - application [ref=e105]:
+            - generic [ref=e121]:
+              - generic [ref=e122]:
+                - generic [ref=e123]: 2026-08-12
+                - generic [ref=e125]: 2026-08-19
+                - generic [ref=e127]: 2026-08-26
+                - generic [ref=e129]: 2026-09-02
+              - generic [ref=e131]:
+                - generic [ref=e132]: $0
+                - generic [ref=e134]: $200
+                - generic [ref=e136]: $400
+                - generic [ref=e138]: $600
+                - generic [ref=e140]: $800
+        - generic [ref=e142]:
+          - generic [ref=e143]:
+            - generic [ref=e144]: Transactions
+            - generic [ref=e145]: Purchases you've logged.
+          - table [ref=e148]:
+            - rowgroup [ref=e149]:
+              - row [ref=e150]:
+                - columnheader "Date" [ref=e151]
+                - columnheader "Metal" [ref=e152]
+                - columnheader "Quantity" [ref=e153]
+                - columnheader "Purchase price" [ref=e154]
+            - rowgroup [ref=e155]:
+              - row [ref=e156]:
+                - cell "2026-08-12" [ref=e157]
+                - cell "Gold" [ref=e158]
+                - cell "4 g" [ref=e159]
+                - cell "$1.00 CAD" [ref=e160]
+              - row [ref=e161]:
+                - cell "2026-08-26" [ref=e162]
+                - cell "Silver" [ref=e163]
+                - cell "6 oz" [ref=e164]
+                - cell "$1.00 CAD" [ref=e165]
+    - region "Notifications alt+T"
+  - generic [aria-hidden] [ref=e166]: $0

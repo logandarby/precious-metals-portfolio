@@ -1,0 +1,49 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - generic [aria-hidden] [ref=f4e3]:
+      - banner [ref=f4e4]:
+        - link [ref=f4e51] [cursor=pointer]:
+          - /url: /portfolios
+          - text: Precious Metals
+        - generic [ref=f4e6]:
+          - paragraph [ref=f4e7]: test
+          - button [ref=f4e52]: Log out
+      - generic [ref=f4e10]:
+        - generic [ref=f4e11]:
+          - generic [ref=f4e12]:
+            - heading [level=1] [ref=f4e53]: Portfolios
+            - paragraph [ref=f4e14]: Values in CAD at current prices.
+          - button [ref=f4e54]: Create portfolio
+        - generic [ref=f4e17]:
+          - generic [ref=f4e18]:
+            - button [ref=f4e55]
+            - link [ref=f4e56] [cursor=pointer]:
+              - /url: /portfolios/33333333-3333-3333-3333-333333333301
+              - generic [ref=f4e23]:
+                - generic [ref=f4e24]: Retirement Metals
+                - generic [ref=f4e25]: $11,850.00 CAD
+          - generic [ref=f4e26]:
+            - button [ref=f4e57]
+            - link [ref=f4e58] [cursor=pointer]:
+              - /url: /portfolios/21285b41-9eeb-4728-ad06-a9765c34e501
+              - generic [ref=f4e31]:
+                - generic [ref=f4e32]: test
+                - generic [ref=f4e33]: $0.00 CAD
+          - generic [ref=f4e34]:
+            - button [ref=f4e59]
+            - link [ref=f4e60] [cursor=pointer]:
+              - /url: /portfolios/46da938c-68b2-4553-b08a-a49cf3b36d2e
+              - generic [ref=f4e39]:
+                - generic [ref=f4e40]: Test portfolio
+                - generic [ref=f4e41]: $739.40 CAD
+    - region "Notifications alt+T"
+  - dialog [ref=f4e64]:
+    - generic [ref=f4e65]:
+      - generic [ref=f4e66]:
+        - heading "Rename portfolio" [level=2] [ref=f4e67]
+        - paragraph [ref=f4e68]: Choose a new name.
+      - generic [ref=f4e69]:
+        - generic [ref=f4e70]: Name
+        - textbox "Name" [active] [ref=f4e71]: Test portfolio
+      - button "Save" [ref=f4e73]
+    - button "Close" [ref=f4e74]

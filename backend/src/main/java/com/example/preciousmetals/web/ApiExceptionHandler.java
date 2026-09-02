@@ -1,5 +1,7 @@
 package com.example.preciousmetals.web;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpHeaders;
@@ -36,5 +38,16 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(AuthenticationException.class)
   public ProblemDetail handleAuthenticationFailure(AuthenticationException exception) {
     return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ProblemDetail handleConstraintViolation(ConstraintViolationException exception) {
+    Map<String, String> fieldErrors = new LinkedHashMap<>();
+    for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
+      fieldErrors.putIfAbsent(violation.getPropertyPath().toString(), violation.getMessage());
+    }
+    ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
+    problem.setProperty("fieldErrors", fieldErrors);
+    return problem;
   }
 }

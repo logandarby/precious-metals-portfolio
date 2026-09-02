@@ -1,0 +1,102 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e2]:
+    - generic [ref=f6e3]:
+      - banner [ref=f6e4]:
+        - link "Precious Metals" [ref=f6e5] [cursor=pointer]:
+          - /url: /portfolios
+        - generic [ref=f6e6]:
+          - paragraph [ref=f6e7]: test
+          - button "Log out" [ref=f6e8]
+      - generic [ref=f6e46]:
+        - generic [ref=f6e47]:
+          - generic [ref=f6e48]:
+            - link "Back" [ref=f6e49] [cursor=pointer]:
+              - /url: /portfolios
+            - generic [ref=f6e50]:
+              - heading "Retirement Metals" [level=1] [ref=f6e51]
+              - button "Actions for Retirement Metals" [ref=f6e53]
+          - link "Add transactions" [ref=f6e54] [cursor=pointer]:
+            - /url: /portfolios/33333333-3333-3333-3333-333333333301/transactions/new
+        - generic [ref=f6e56]:
+          - generic [ref=f6e57]:
+            - paragraph [ref=f6e58]: Value
+            - paragraph [ref=f6e59]: $11,850.00 CAD
+          - generic [ref=f6e60]:
+            - paragraph [ref=f6e61]: Cost basis
+            - paragraph [ref=f6e62]: $9,900.00 CAD
+          - generic [ref=f6e63]:
+            - paragraph [ref=f6e64]: Gain
+            - paragraph [ref=f6e65]: +$1,950.00 CAD
+          - generic [ref=f6e66]:
+            - paragraph [ref=f6e67]: Return
+            - paragraph [ref=f6e68]: +19.70%
+        - generic [ref=f6e69]:
+          - generic [ref=f6e70]:
+            - generic [ref=f6e71]:
+              - generic [ref=f6e72]: Allocation
+              - generic [ref=f6e73]: By metal, as a share of current value.
+            - generic [ref=f6e77]:
+              - list [ref=f6e79]:
+                - listitem [ref=f6e80]:
+                  - img "Gold legend icon" [ref=f6e81]
+                  - text: Gold
+                - listitem [ref=f6e83]:
+                  - img "Silver legend icon" [ref=f6e84]
+                  - text: Silver
+              - application [ref=f6e86]
+          - generic [ref=f6e96]:
+            - generic [ref=f6e97]:
+              - generic [ref=f6e98]: Historical value
+              - generic [ref=f6e99]: Portfolio value over the selected period.
+              - generic [ref=f6e101]:
+                - button "1W" [ref=f6e102]
+                - button "1M" [ref=f6e103]
+                - button "3M" [ref=f6e104]
+                - button "1Y" [ref=f6e105]
+                - button "YTD" [ref=f6e106]
+                - button "All" [ref=f6e107]
+            - application [ref=f6e112]:
+              - generic [ref=f6e128]:
+                - generic [ref=f6e129]:
+                  - generic [ref=f6e130]: 2026-01-24
+                  - generic [ref=f6e132]: 2026-02-28
+                  - generic [ref=f6e134]: 2026-04-04
+                  - generic [ref=f6e136]: 2026-05-09
+                  - generic [ref=f6e138]: 2026-06-13
+                  - generic [ref=f6e140]: 2026-07-18
+                  - generic [ref=f6e142]: 2026-09-02
+                - generic [ref=f6e144]:
+                  - generic [ref=f6e145]: $0
+                  - generic [ref=f6e147]: $3,000
+                  - generic [ref=f6e149]: $6,000
+                  - generic [ref=f6e151]: $9,000
+                  - generic [ref=f6e153]: $12,000
+        - generic [ref=f6e155]:
+          - generic [ref=f6e156]:
+            - generic [ref=f6e157]: Transactions
+            - generic [ref=f6e158]: Purchases you've logged.
+          - table [ref=f6e161]:
+            - rowgroup [ref=f6e162]:
+              - row [ref=f6e163]:
+                - columnheader "Date" [ref=f6e164]
+                - columnheader "Metal" [ref=f6e165]
+                - columnheader "Quantity" [ref=f6e166]
+                - columnheader "Purchase price" [ref=f6e167]
+            - rowgroup [ref=f6e168]:
+              - row [ref=f6e169]:
+                - cell "2026-01-10" [ref=f6e170]
+                - cell "Gold" [ref=f6e171]
+                - cell "2 oz" [ref=f6e172]
+                - cell "$6,000.00 CAD" [ref=f6e173]
+              - row [ref=f6e174]:
+                - cell "2026-02-03" [ref=f6e175]
+                - cell "Silver" [ref=f6e176]
+                - cell "20 oz" [ref=f6e177]
+                - cell "$700.00 CAD" [ref=f6e178]
+              - row [ref=f6e179]:
+                - cell "2026-03-12" [ref=f6e180]
+                - cell "Gold" [ref=f6e181]
+                - cell "1 oz" [ref=f6e182]
+                - cell "$3,200.00 CAD" [ref=f6e183]
+    - region "Notifications alt+T"
+  - generic [aria-hidden] [ref=f6e184]: $0

@@ -1,0 +1,47 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - generic [aria-hidden] [ref=f4e3]:
+      - banner [ref=f4e4]:
+        - link [ref=f4e103] [cursor=pointer]:
+          - /url: /portfolios
+          - text: Precious Metals
+        - generic [ref=f4e6]:
+          - paragraph [ref=f4e7]: test
+          - button [ref=f4e104]: Log out
+      - generic [ref=f4e10]:
+        - generic [ref=f4e11]:
+          - generic [ref=f4e12]:
+            - heading [level=1] [ref=f4e105]: Portfolios
+            - paragraph [ref=f4e14]: Values in CAD at current prices.
+          - button [ref=f4e106]: Create portfolio
+        - generic [ref=f4e17]:
+          - generic [ref=f4e18]:
+            - button [ref=f4e107]
+            - link [ref=f4e108] [cursor=pointer]:
+              - /url: /portfolios/33333333-3333-3333-3333-333333333301
+              - generic [ref=f4e23]:
+                - generic [ref=f4e24]: Retirement Metals
+                - generic [ref=f4e25]: $11,850.00 CAD
+          - generic [ref=f4e26]:
+            - button [ref=f4e109]
+            - link [ref=f4e110] [cursor=pointer]:
+              - /url: /portfolios/21285b41-9eeb-4728-ad06-a9765c34e501
+              - generic [ref=f4e31]:
+                - generic [ref=f4e32]: test
+                - generic [ref=f4e33]: $0.00 CAD
+          - generic [ref=f4e34]:
+            - button [ref=f4e111]
+            - link [ref=f4e112] [cursor=pointer]:
+              - /url: /portfolios/46da938c-68b2-4553-b08a-a49cf3b36d2e
+              - generic [ref=f4e39]:
+                - generic [ref=f4e40]: Renamed Test
+                - generic [ref=f4e41]: $739.40 CAD
+    - region "Notifications alt+T"
+  - dialog [ref=f4e116]:
+    - generic [ref=f4e117]:
+      - heading "Delete portfolio" [level=2] [ref=f4e118]
+      - paragraph [ref=f4e119]: This removes test and every purchase in it.
+    - generic [ref=f4e120]:
+      - button "Cancel" [active] [ref=f4e121]
+      - button "Delete" [ref=f4e122]
+    - button "Close" [ref=f4e123]

@@ -1,0 +1,41 @@
+- generic [ref=f6e2]:
+  - generic [ref=f6e3]:
+    - banner [ref=f6e4]:
+      - link "Precious Metals" [ref=f6e5] [cursor=pointer]:
+        - /url: /portfolios
+      - generic [ref=f6e6]:
+        - paragraph [ref=f6e7]: test
+        - button "Log out" [ref=f6e8]
+    - generic [ref=f6e10]:
+      - generic [ref=f6e11]:
+        - generic [ref=f6e12]:
+          - paragraph [ref=f6e13]: Overview
+          - heading "Portfolios" [level=1] [ref=f6e14]
+        - button "Create portfolio" [ref=f6e15]
+      - generic [ref=f6e17]:
+        - generic [ref=f6e18]:
+          - generic [ref=f6e19]: Total value
+          - generic [ref=f6e20]: $12,589.40 CAD
+        - paragraph [ref=f6e22]: 2 portfolios · CAD
+      - generic [ref=f6e23]:
+        - generic [ref=f6e24]:
+          - button "Actions for Retirement Metals" [ref=f6e27]
+          - link "Retirement Metals $11,850.00 CAD +$1,950.00 CAD +19.70%" [ref=f6e28] [cursor=pointer]:
+            - /url: /portfolios/33333333-3333-3333-3333-333333333301
+            - generic [ref=f6e29]:
+              - generic [ref=f6e30]: Retirement Metals
+              - generic [ref=f6e31]: $11,850.00 CAD
+            - generic [ref=f6e32]:
+              - generic [ref=f6e33]: +$1,950.00 CAD
+              - generic [ref=f6e34]: +19.70%
+        - generic [ref=f6e35]:
+          - button "Actions for Test portfolio 3" [ref=f6e38]
+          - link "Test portfolio 3 $739.40 CAD +$737.40 CAD +36,870.00%" [ref=f6e39] [cursor=pointer]:
+            - /url: /portfolios/46da938c-68b2-4553-b08a-a49cf3b36d2e
+            - generic [ref=f6e40]:
+              - generic [ref=f6e41]: Test portfolio 3
+              - generic [ref=f6e42]: $739.40 CAD
+            - generic [ref=f6e43]:
+              - generic [ref=f6e44]: +$737.40 CAD
+              - generic [ref=f6e45]: +36,870.00%
+  - region "Notifications alt+T"

@@ -2,8 +2,10 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { useAppSelector } from "@/store/hooks";
 import { AppHeader } from "@/components/AppHeader";
 import { Toaster } from "@/components/ui/sonner";
-import { DashboardPage } from "@/pages/DashboardPage";
+import { AddTransactionPage } from "@/pages/AddTransactionPage";
 import { LoginPage } from "@/pages/LoginPage";
+import { PortfolioDetailPage } from "@/pages/PortfolioDetailPage";
+import { PortfolioListPage } from "@/pages/PortfolioListPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 
 function CenteredOutlet() {
@@ -29,7 +31,7 @@ function SessionGate() {
 function GuestOnly() {
   const user = useAppSelector((state) => state.auth.user);
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/portfolios" replace />;
   }
   return <Outlet />;
 }
@@ -42,7 +44,7 @@ function RequireAuth() {
   return (
     <div className="flex min-h-svh flex-col bg-muted">
       <AppHeader />
-      <div className="flex flex-1 items-center justify-center p-6">
+      <div className="flex flex-1 flex-col px-6 py-8">
         <Outlet />
       </div>
     </div>
@@ -62,7 +64,13 @@ export default function App() {
             </Route>
           </Route>
           <Route element={<RequireAuth />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<Navigate to="/portfolios" replace />} />
+            <Route path="/portfolios" element={<PortfolioListPage />} />
+            <Route path="/portfolios/:id" element={<PortfolioDetailPage />} />
+            <Route
+              path="/portfolios/:id/transactions/new"
+              element={<AddTransactionPage />}
+            />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

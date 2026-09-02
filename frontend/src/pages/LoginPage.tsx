@@ -48,7 +48,7 @@ export function LoginPage() {
     setError(null);
     try {
       await dispatch(loginUser({ email, password })).unwrap();
-      navigate("/dashboard", { replace: true });
+      navigate("/portfolios", { replace: true });
     } catch (cause) {
       if (isRejectedApiError(cause)) {
         for (const [field, message] of Object.entries(cause.fieldErrors)) {

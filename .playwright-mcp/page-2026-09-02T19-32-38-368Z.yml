@@ -1,0 +1,30 @@
+- generic [ref=f4e2]:
+  - generic [ref=f4e3]:
+    - banner [ref=f4e4]:
+      - link "Precious Metals" [ref=f4e126] [cursor=pointer]:
+        - /url: /portfolios
+      - generic [ref=f4e6]:
+        - paragraph [ref=f4e7]: test
+        - button "Log out" [ref=f4e127]
+    - generic [ref=f4e10]:
+      - generic [ref=f4e11]:
+        - generic [ref=f4e12]:
+          - heading "Portfolios" [level=1] [ref=f4e128]
+          - paragraph [ref=f4e14]: Values in CAD at current prices.
+        - button "Create portfolio" [ref=f4e129]
+      - generic [ref=f4e17]:
+        - generic [ref=f4e18]:
+          - button "Actions for Retirement Metals" [ref=f4e130]
+          - link "Retirement Metals $11,850.00 CAD" [ref=f4e131] [cursor=pointer]:
+            - /url: /portfolios/33333333-3333-3333-3333-333333333301
+            - generic [ref=f4e23]:
+              - generic [ref=f4e24]: Retirement Metals
+              - generic [ref=f4e25]: $11,850.00 CAD
+        - generic [ref=f4e34]:
+          - button "Actions for Renamed Test" [ref=f4e132]
+          - link "Renamed Test $739.40 CAD" [ref=f4e133] [cursor=pointer]:
+            - /url: /portfolios/46da938c-68b2-4553-b08a-a49cf3b36d2e
+            - generic [ref=f4e39]:
+              - generic [ref=f4e40]: Renamed Test
+              - generic [ref=f4e41]: $739.40 CAD
+  - region "Notifications alt+T"

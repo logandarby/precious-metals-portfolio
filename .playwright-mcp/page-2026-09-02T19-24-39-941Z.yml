@@ -1,0 +1,31 @@
+- generic [ref=e2]:
+  - generic [ref=e19]:
+    - banner [ref=e20]:
+      - link "Precious Metals" [ref=e21] [cursor=pointer]:
+        - /url: /portfolios
+      - generic [ref=e22]:
+        - paragraph [ref=e23]: test
+        - button "Log out" [ref=e24]
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - heading "Portfolios" [level=1] [ref=e29]
+          - paragraph [ref=e30]: Values in CAD at current prices.
+        - button "Create portfolio" [ref=e31]
+      - generic [ref=e32]:
+        - link "Retirement Metals $11,850.00 CAD" [ref=e33] [cursor=pointer]:
+          - /url: /portfolios/33333333-3333-3333-3333-333333333301
+          - generic [ref=e35]:
+            - generic [ref=e36]: Retirement Metals
+            - generic [ref=e37]: $11,850.00 CAD
+        - link "test $0.00 CAD" [ref=e38] [cursor=pointer]:
+          - /url: /portfolios/21285b41-9eeb-4728-ad06-a9765c34e501
+          - generic [ref=e40]:
+            - generic [ref=e41]: test
+            - generic [ref=e42]: $0.00 CAD
+        - link "Test portfolio $739.40 CAD" [ref=e43] [cursor=pointer]:
+          - /url: /portfolios/46da938c-68b2-4553-b08a-a49cf3b36d2e
+          - generic [ref=e45]:
+            - generic [ref=e46]: Test portfolio
+            - generic [ref=e47]: $739.40 CAD
+  - region "Notifications alt+T"

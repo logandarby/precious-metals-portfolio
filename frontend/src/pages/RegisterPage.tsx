@@ -59,7 +59,7 @@ export function RegisterPage() {
     try {
       await dispatch(registerUser({ email, password })).unwrap();
       toast.success("You've registered successfully");
-      navigate("/dashboard", { replace: true });
+      navigate("/portfolios", { replace: true });
     } catch (cause) {
       if (isRejectedApiError(cause)) {
         for (const [field, message] of Object.entries(cause.fieldErrors)) {

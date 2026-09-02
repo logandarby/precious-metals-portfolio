@@ -1,4 +1,4 @@
-package com.example.preciousmetals.auth.model;
+package com.example.preciousmetals.portfolio.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,48 +7,48 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "users")
+@Table(name = "portfolios")
 @Getter
-public class User {
+public class Portfolio {
+
+  public static final String CAD = "CAD";
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
   @NotBlank
-  @Email
-  @Size(max = 254)
-  @Column(nullable = false, unique = true)
-  private String email;
+  @Size(max = 255)
+  @Column(nullable = false)
+  private String name;
 
   @NotBlank
-  @Column(name = "password_hash", nullable = false)
-  private String passwordHash;
+  @Size(min = 3, max = 3)
+  @Column(name = "base_currency", nullable = false, length = 3)
+  private String baseCurrency;
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
 
-  @LastModifiedDate
-  @Column(name = "updated_at", nullable = false)
-  private Instant updatedAt;
+  protected Portfolio() {}
 
-  protected User() {}
+  public Portfolio(String name) {
+    this.name = name;
+    this.baseCurrency = CAD;
+  }
 
-  public User(String email, String passwordHash) {
-    this.email = email;
-    this.passwordHash = passwordHash;
+  public void rename(String name) {
+    this.name = name;
   }
 }
