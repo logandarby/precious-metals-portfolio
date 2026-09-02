@@ -1,4 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
 import { CircleAlert } from 'lucide-react'
 import { login } from '@/api/auth'
@@ -16,18 +18,33 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  EMAIL_MAX_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  loginSchema,
+  type LoginFormValues,
+} from '@/lib/authValidation'
+
+const LOGIN_FIELDS = new Set<keyof LoginFormValues>(['email', 'password'])
 
 export function LoginPage() {
   const navigate = useNavigate()
   const { refresh } = useSession()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [pending, setPending] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    setError: setFieldError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setPending(true)
+  async function onValid({ email, password }: LoginFormValues) {
     setError(null)
     try {
       await login(email, password)
@@ -35,13 +52,20 @@ export function LoginPage() {
       navigate('/dashboard', { replace: true })
     } catch (cause) {
       if (cause instanceof ApiError) {
+        for (const [field, message] of Object.entries(cause.fieldErrors)) {
+          if (LOGIN_FIELDS.has(field as keyof LoginFormValues)) {
+            setFieldError(field as keyof LoginFormValues, { type: 'server', message })
+          }
+        }
         setError(cause.message)
       } else {
         setError('Login failed')
       }
-    } finally {
-      setPending(false)
     }
+  }
+
+  function onInvalid() {
+    setError('Please fix the highlighted fields and try again.')
   }
 
   return (
@@ -51,30 +75,40 @@ export function LoginPage() {
         <CardDescription>Sign in with your email and password.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="grid gap-4" onSubmit={handleSubmit}>
+        <form className="grid gap-4" noValidate onSubmit={handleSubmit(onValid, onInvalid)}>
           <div className="grid gap-2">
             <Label htmlFor="login-email">Email</Label>
             <Input
               id="login-email"
               type="email"
-              name="email"
               autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
+              maxLength={EMAIL_MAX_LENGTH}
+              {...register('email')}
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? 'login-email-error' : undefined}
             />
+            {errors.email ? (
+              <p id="login-email-error" className="text-xs text-destructive">
+                {errors.email.message}
+              </p>
+            ) : null}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="login-password">Password</Label>
             <Input
               id="login-password"
               type="password"
-              name="password"
               autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
+              maxLength={PASSWORD_MAX_LENGTH}
+              {...register('password')}
+              aria-invalid={Boolean(errors.password)}
+              aria-describedby={errors.password ? 'login-password-error' : undefined}
             />
+            {errors.password ? (
+              <p id="login-password-error" className="text-xs text-destructive">
+                {errors.password.message}
+              </p>
+            ) : null}
           </div>
           {error ? (
             <Alert variant="destructive">
@@ -83,8 +117,8 @@ export function LoginPage() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : null}
-          <Button type="submit" disabled={pending}>
-            {pending ? 'Signing in…' : 'Log in'}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Signing in…' : 'Log in'}
           </Button>
         </form>
       </CardContent>

@@ -5,6 +5,7 @@ export async function register(email: string, password: string): Promise<void> {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   })
+  invalidateCsrfToken()
 }
 
 export async function login(email: string, password: string): Promise<string> {

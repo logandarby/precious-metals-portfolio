@@ -1,0 +1,8 @@
+- generic [ref=f1e30]:
+  - generic [ref=f1e31]:
+    - generic [ref=f1e32]: Dashboard
+    - generic [ref=f1e33]: This page is only available when your session is active.
+  - generic [ref=f1e34]:
+    - paragraph [ref=f1e35]: OK
+    - paragraph [ref=f1e36]: Refresh the page to confirm the session persists across reloads.
+    - button "Recheck session" [ref=f1e37]

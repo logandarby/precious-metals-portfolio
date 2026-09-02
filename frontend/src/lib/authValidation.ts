@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 export const EMAIL_MAX_LENGTH = 254
 export const PASSWORD_MIN_LENGTH = 8
 export const PASSWORD_MAX_LENGTH = 72
@@ -10,6 +12,7 @@ export const AUTH_MESSAGES = {
   emailInvalid: 'Email must be a valid email address',
   emailTooLong: `Email must be at most ${EMAIL_MAX_LENGTH} characters`,
   passwordRequired: 'Password is required',
+  passwordTooLong: 'Password is too long',
   passwordLength: `Password must be between ${PASSWORD_MIN_LENGTH} and ${PASSWORD_MAX_LENGTH} characters`,
   passwordComplexity:
     'Password must contain at least one lowercase letter, one uppercase letter, and one number',
@@ -17,42 +20,40 @@ export const AUTH_MESSAGES = {
   passwordMismatch: 'Passwords do not match',
 } as const
 
-export function validateEmail(email: string): string | null {
-  const trimmed = email.trim()
-  if (!trimmed) {
-    return AUTH_MESSAGES.emailRequired
-  }
-  if (trimmed.length > EMAIL_MAX_LENGTH) {
-    return AUTH_MESSAGES.emailTooLong
-  }
-  if (!EMAIL_PATTERN.test(trimmed)) {
-    return AUTH_MESSAGES.emailInvalid
-  }
-  return null
-}
+export const emailSchema = z
+  .string()
+  .trim()
+  .min(1, AUTH_MESSAGES.emailRequired)
+  .max(EMAIL_MAX_LENGTH, AUTH_MESSAGES.emailTooLong)
+  .regex(EMAIL_PATTERN, AUTH_MESSAGES.emailInvalid)
 
-export function validatePassword(password: string): string | null {
-  if (!password) {
-    return AUTH_MESSAGES.passwordRequired
-  }
-  if (password.length < PASSWORD_MIN_LENGTH || password.length > PASSWORD_MAX_LENGTH) {
-    return AUTH_MESSAGES.passwordLength
-  }
-  if (!PASSWORD_COMPLEXITY_PATTERN.test(password)) {
-    return AUTH_MESSAGES.passwordComplexity
-  }
-  return null
-}
+export const loginSchema = z.object({
+  email: emailSchema,
+  password: z
+    .string()
+    .min(1, AUTH_MESSAGES.passwordRequired)
+    .max(PASSWORD_MAX_LENGTH, AUTH_MESSAGES.passwordTooLong),
+})
 
-export function validatePasswordConfirmation(password: string, confirmation: string): string | null {
-  if (!confirmation) {
-    return AUTH_MESSAGES.passwordConfirmRequired
-  }
-  if (password !== confirmation) {
-    return AUTH_MESSAGES.passwordMismatch
-  }
-  return null
-}
+export type LoginFormValues = z.infer<typeof loginSchema>
+
+export const registerSchema = z
+  .object({
+    email: emailSchema,
+    password: z
+      .string()
+      .min(1, AUTH_MESSAGES.passwordRequired)
+      .min(PASSWORD_MIN_LENGTH, AUTH_MESSAGES.passwordLength)
+      .max(PASSWORD_MAX_LENGTH, AUTH_MESSAGES.passwordLength)
+      .regex(PASSWORD_COMPLEXITY_PATTERN, AUTH_MESSAGES.passwordComplexity),
+    confirmPassword: z.string().min(1, AUTH_MESSAGES.passwordConfirmRequired),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: AUTH_MESSAGES.passwordMismatch,
+    path: ['confirmPassword'],
+  })
+
+export type RegisterFormValues = z.infer<typeof registerSchema>
 
 export type PasswordStrength = {
   score: 0 | 1 | 2 | 3 | 4

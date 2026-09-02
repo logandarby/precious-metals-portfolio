@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class PreciousMetalsTrackerApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(PreciousMetalsTrackerApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(PreciousMetalsTrackerApplication.class, args);
+  }
 }
