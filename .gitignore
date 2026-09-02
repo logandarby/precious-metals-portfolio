@@ -18,3 +18,6 @@ backend/target/
 
 # Logs
 *.log
+
+# Playwright MCP snapshots
+.playwright-mcp/
