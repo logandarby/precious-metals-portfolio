@@ -2,13 +2,13 @@ package com.example.preciousmetals.auth.controller;
 
 import com.example.preciousmetals.auth.dto.CsrfResponse;
 import com.example.preciousmetals.auth.dto.LoginRequest;
+import com.example.preciousmetals.auth.dto.MeResponse;
 import com.example.preciousmetals.auth.dto.RegisterRequest;
 import com.example.preciousmetals.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,8 +32,8 @@ public class AuthController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<?> me(Authentication auth) {
-    return ResponseEntity.ok("OK");
+  public MeResponse me(Authentication auth) {
+    return this.authService.currentUser(auth);
   }
 
   @GetMapping("/csrf")
@@ -44,18 +44,19 @@ public class AuthController {
 
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.CREATED)
-  public void register(
+  public MeResponse register(
       @Valid @RequestBody RegisterRequest registerRequest, HttpServletRequest httpRequest) {
     Authentication authentication = this.authService.register(registerRequest);
     establishSession(authentication, httpRequest);
+    return this.authService.currentUser(authentication);
   }
 
   @PostMapping("/login")
-  public ResponseEntity<?> login(
+  public MeResponse login(
       @Valid @RequestBody LoginRequest loginRequest, HttpServletRequest httpRequest) {
     Authentication authentication = this.authService.login(loginRequest);
     establishSession(authentication, httpRequest);
-    return ResponseEntity.ok("Login Successful");
+    return this.authService.currentUser(authentication);
   }
 
   private void establishSession(Authentication authentication, HttpServletRequest httpRequest) {

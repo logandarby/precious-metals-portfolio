@@ -1,6 +1,7 @@
 package com.example.preciousmetals.auth.service;
 
 import com.example.preciousmetals.auth.dto.LoginRequest;
+import com.example.preciousmetals.auth.dto.MeResponse;
 import com.example.preciousmetals.auth.dto.RegisterRequest;
 import com.example.preciousmetals.auth.exception.EmailAlreadyRegisteredException;
 import com.example.preciousmetals.auth.model.User;
@@ -8,6 +9,7 @@ import com.example.preciousmetals.auth.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,5 +44,12 @@ public class AuthService {
   public Authentication login(LoginRequest req) {
     return authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(req.email(), req.password()));
+  }
+
+  public MeResponse currentUser(Authentication authentication) {
+    return userRepository
+        .findByEmail(authentication.getName())
+        .map(MeResponse::from)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
   }
 }

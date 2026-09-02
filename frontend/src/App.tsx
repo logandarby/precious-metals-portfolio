@@ -1,5 +1,5 @@
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { useSession } from '@/auth/useSession'
+import { useAppSelector } from '@/store/hooks'
 import { Toaster } from '@/components/ui/sonner'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { LoginPage } from '@/pages/LoginPage'
@@ -14,24 +14,24 @@ function CenteredOutlet() {
 }
 
 function SessionGate() {
-  const { loading } = useSession()
-  if (loading) {
+  const initialized = useAppSelector((state) => state.auth.initialized)
+  if (!initialized) {
     return <p className="text-sm text-muted-foreground">Checking session…</p>
   }
   return <Outlet />
 }
 
 function GuestOnly() {
-  const { identity } = useSession()
-  if (identity) {
+  const user = useAppSelector((state) => state.auth.user)
+  if (user) {
     return <Navigate to="/dashboard" replace />
   }
   return <Outlet />
 }
 
 function RequireAuth() {
-  const { identity } = useSession()
-  if (!identity) {
+  const user = useAppSelector((state) => state.auth.user)
+  if (!user) {
     return <Navigate to="/" replace />
   }
   return <Outlet />

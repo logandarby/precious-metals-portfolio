@@ -57,6 +57,34 @@ export class ApiError extends Error {
   }
 }
 
+export type RejectedApiError = {
+  message: string
+  status: number
+  fieldErrors: Record<string, string>
+}
+
+export function toRejectedApiError(error: unknown): RejectedApiError {
+  if (error instanceof ApiError) {
+    return {
+      message: error.message,
+      status: error.status,
+      fieldErrors: error.fieldErrors,
+    }
+  }
+  return { message: 'Request failed', status: 0, fieldErrors: {} }
+}
+
+export function isRejectedApiError(error: unknown): error is RejectedApiError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    'fieldErrors' in error &&
+    typeof (error as RejectedApiError).message === 'string' &&
+    typeof (error as RejectedApiError).fieldErrors === 'object'
+  )
+}
+
 async function readApiError(response: Response): Promise<ApiError> {
   const text = await response.text()
   if (!text) {

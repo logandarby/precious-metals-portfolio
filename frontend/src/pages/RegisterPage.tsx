@@ -3,9 +3,9 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
 import { CircleAlert } from 'lucide-react'
-import { register as registerAccount } from '@/api/auth'
-import { useSession } from '@/auth/useSession'
-import { ApiError } from '@/api/client'
+import { isRejectedApiError } from '@/api/client'
+import { useAppDispatch } from '@/store/hooks'
+import { registerUser } from '@/store/authSlice'
 import { PasswordStrengthBar } from '@/components/PasswordStrengthBar'
 import { toast } from 'sonner'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -36,7 +36,7 @@ const REGISTER_FIELDS = new Set<keyof RegisterFormValues>([
 
 export function RegisterPage() {
   const navigate = useNavigate()
-  const { refresh } = useSession()
+  const dispatch = useAppDispatch()
   const [error, setError] = useState<string | null>(null)
   const {
     register,
@@ -57,12 +57,11 @@ export function RegisterPage() {
   async function onValid({ email, password }: RegisterFormValues) {
     setError(null)
     try {
-      await registerAccount(email, password)
+      await dispatch(registerUser({ email, password })).unwrap()
       toast.success("You've registered successfully")
-      await refresh()
       navigate('/dashboard', { replace: true })
     } catch (cause) {
-      if (cause instanceof ApiError) {
+      if (isRejectedApiError(cause)) {
         for (const [field, message] of Object.entries(cause.fieldErrors)) {
           if (REGISTER_FIELDS.has(field as keyof RegisterFormValues)) {
             setFieldError(field as keyof RegisterFormValues, { type: 'server', message })

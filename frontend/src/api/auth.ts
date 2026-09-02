@@ -1,27 +1,33 @@
 import { apiJson, invalidateCsrfToken } from './client'
 
-export async function register(email: string, password: string): Promise<void> {
-  await apiJson('/api/auth/register', {
+export type MeResponse = {
+  id: string
+  email: string
+}
+
+export async function register(email: string, password: string): Promise<MeResponse> {
+  const user = await apiJson<MeResponse>('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   })
   invalidateCsrfToken()
+  return user
 }
 
-export async function login(email: string, password: string): Promise<string> {
-  const message = await apiJson<string>('/api/auth/login', {
+export async function login(email: string, password: string): Promise<MeResponse> {
+  const user = await apiJson<MeResponse>('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   })
   invalidateCsrfToken()
-  return message
+  return user
 }
 
-let meLoad: Promise<string> | null = null
+let meLoad: Promise<MeResponse> | null = null
 
-export async function me(): Promise<string> {
+export async function me(): Promise<MeResponse> {
   if (!meLoad) {
-    meLoad = apiJson<string>('/api/auth/me').finally(() => {
+    meLoad = apiJson<MeResponse>('/api/auth/me').finally(() => {
       meLoad = null
     })
   }

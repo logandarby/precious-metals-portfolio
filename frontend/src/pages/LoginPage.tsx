@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
 import { CircleAlert } from 'lucide-react'
-import { login } from '@/api/auth'
-import { useSession } from '@/auth/useSession'
-import { ApiError } from '@/api/client'
+import { isRejectedApiError } from '@/api/client'
+import { useAppDispatch } from '@/store/hooks'
+import { loginUser } from '@/store/authSlice'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,7 +29,7 @@ const LOGIN_FIELDS = new Set<keyof LoginFormValues>(['email', 'password'])
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const { refresh } = useSession()
+  const dispatch = useAppDispatch()
   const [error, setError] = useState<string | null>(null)
   const {
     register,
@@ -47,11 +47,10 @@ export function LoginPage() {
   async function onValid({ email, password }: LoginFormValues) {
     setError(null)
     try {
-      await login(email, password)
-      await refresh()
+      await dispatch(loginUser({ email, password })).unwrap()
       navigate('/dashboard', { replace: true })
     } catch (cause) {
-      if (cause instanceof ApiError) {
+      if (isRejectedApiError(cause)) {
         for (const [field, message] of Object.entries(cause.fieldErrors)) {
           if (LOGIN_FIELDS.has(field as keyof LoginFormValues)) {
             setFieldError(field as keyof LoginFormValues, { type: 'server', message })
@@ -71,7 +70,7 @@ export function LoginPage() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>Log in</CardTitle>
+        <CardTitle>Log In</CardTitle>
         <CardDescription>Sign in with your email and password.</CardDescription>
       </CardHeader>
       <CardContent>
