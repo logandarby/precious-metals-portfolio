@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { login, me, register, type MeResponse } from '@/api/auth'
+import { login, logout, me, register, type MeResponse } from '@/api/auth'
 import { toRejectedApiError, type RejectedApiError } from '@/api/client'
 
 export type AuthenticatedUser = MeResponse
@@ -45,6 +45,17 @@ export const registerUser = createAsyncThunk<
   }
 })
 
+export const logoutUser = createAsyncThunk<void, void, { rejectValue: RejectedApiError }>(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      await logout()
+    } catch (error) {
+      return rejectWithValue(toRejectedApiError(error))
+    }
+  },
+)
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -65,6 +76,10 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.user = action.payload
+        state.initialized = true
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null
         state.initialized = true
       })
   },

@@ -33,3 +33,8 @@ export async function me(): Promise<MeResponse> {
   }
   return meLoad
 }
+
+export async function logout(): Promise<void> {
+  await apiJson<void>('/logout', { method: 'POST' })
+  invalidateCsrfToken()
+}
