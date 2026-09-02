@@ -69,7 +69,7 @@ public class PortfolioService {
   @Transactional
   public void deletePortfolio(User user, UUID portfolioId) {
     Portfolio portfolio = requirePortfolio(user, portfolioId);
-    transactionRepository.deleteAllByPortfolio(portfolio);
+    // DB handles cascading deletion of transactions
     portfolioRepository.delete(portfolio);
   }
 

@@ -8,7 +8,7 @@ CREATE TABLE users (
 
 CREATE TABLE portfolios (
     id UUID PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES users (id),
+    user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     base_currency VARCHAR(3) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL
