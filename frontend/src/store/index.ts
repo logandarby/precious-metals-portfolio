@@ -1,6 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { createLogger } from 'redux-logger'
-import authReducer, { fetchCurrentUser } from '@/store/authSlice'
+import { configureStore } from "@reduxjs/toolkit";
+import { createLogger } from "redux-logger";
+import authReducer, { fetchCurrentUser } from "@/store/authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,14 +12,14 @@ export const store = configureStore({
         createLogger({
           collapsed: true,
         }),
-      )
+      );
     }
 
-    return getDefaultMiddleware()
+    return getDefaultMiddleware();
   },
-})
+});
 
-store.dispatch(fetchCurrentUser())
+store.dispatch(fetchCurrentUser());
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

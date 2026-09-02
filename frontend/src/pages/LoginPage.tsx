@@ -1,13 +1,13 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from 'react-router-dom'
-import { CircleAlert } from 'lucide-react'
-import { isRejectedApiError } from '@/api/client'
-import { useAppDispatch } from '@/store/hooks'
-import { loginUser } from '@/store/authSlice'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
+import { CircleAlert } from "lucide-react";
+import { isRejectedApiError } from "@/api/client";
+import { useAppDispatch } from "@/store/hooks";
+import { loginUser } from "@/store/authSlice";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,22 +15,22 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   EMAIL_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
   loginSchema,
   type LoginFormValues,
-} from '@/lib/authValidation'
+} from "@/lib/authValidation";
 
-const LOGIN_FIELDS = new Set<keyof LoginFormValues>(['email', 'password'])
+const LOGIN_FIELDS = new Set<keyof LoginFormValues>(["email", "password"]);
 
 export function LoginPage() {
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [error, setError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -39,32 +39,35 @@ export function LoginPage() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
-  })
+  });
 
   async function onValid({ email, password }: LoginFormValues) {
-    setError(null)
+    setError(null);
     try {
-      await dispatch(loginUser({ email, password })).unwrap()
-      navigate('/dashboard', { replace: true })
+      await dispatch(loginUser({ email, password })).unwrap();
+      navigate("/dashboard", { replace: true });
     } catch (cause) {
       if (isRejectedApiError(cause)) {
         for (const [field, message] of Object.entries(cause.fieldErrors)) {
           if (LOGIN_FIELDS.has(field as keyof LoginFormValues)) {
-            setFieldError(field as keyof LoginFormValues, { type: 'server', message })
+            setFieldError(field as keyof LoginFormValues, {
+              type: "server",
+              message,
+            });
           }
         }
-        setError(cause.message)
+        setError(cause.message);
       } else {
-        setError('Login failed')
+        setError("Login failed");
       }
     }
   }
 
   function onInvalid() {
-    setError('Please fix the highlighted fields and try again.')
+    setError("Please fix the highlighted fields and try again.");
   }
 
   return (
@@ -74,7 +77,11 @@ export function LoginPage() {
         <CardDescription>Sign in with your email and password.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="grid gap-4" noValidate onSubmit={handleSubmit(onValid, onInvalid)}>
+        <form
+          className="grid gap-4"
+          noValidate
+          onSubmit={handleSubmit(onValid, onInvalid)}
+        >
           <div className="grid gap-2">
             <Label htmlFor="login-email">Email</Label>
             <Input
@@ -82,9 +89,9 @@ export function LoginPage() {
               type="email"
               autoComplete="email"
               maxLength={EMAIL_MAX_LENGTH}
-              {...register('email')}
+              {...register("email")}
               aria-invalid={Boolean(errors.email)}
-              aria-describedby={errors.email ? 'login-email-error' : undefined}
+              aria-describedby={errors.email ? "login-email-error" : undefined}
             />
             {errors.email ? (
               <p id="login-email-error" className="text-xs text-destructive">
@@ -99,9 +106,11 @@ export function LoginPage() {
               type="password"
               autoComplete="current-password"
               maxLength={PASSWORD_MAX_LENGTH}
-              {...register('password')}
+              {...register("password")}
               aria-invalid={Boolean(errors.password)}
-              aria-describedby={errors.password ? 'login-password-error' : undefined}
+              aria-describedby={
+                errors.password ? "login-password-error" : undefined
+              }
             />
             {errors.password ? (
               <p id="login-password-error" className="text-xs text-destructive">
@@ -117,15 +126,20 @@ export function LoginPage() {
             </Alert>
           ) : null}
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Signing in…' : 'Log in'}
+            {isSubmitting ? "Signing in…" : "Log in"}
           </Button>
         </form>
       </CardContent>
       <CardFooter>
-        <Button type="button" variant="link" className="px-0" onClick={() => navigate('/register')}>
+        <Button
+          type="button"
+          variant="link"
+          className="px-0"
+          onClick={() => navigate("/register")}
+        >
           Create an account
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

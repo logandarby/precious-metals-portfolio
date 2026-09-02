@@ -1,88 +1,105 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { login, logout, me, register, type MeResponse } from '@/api/auth'
-import { toRejectedApiError, type RejectedApiError } from '@/api/client'
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { login, logout, me, register, type MeResponse } from "@/api/auth";
+import { toRejectedApiError, type RejectedApiError } from "@/api/client";
 
-export type AuthenticatedUser = MeResponse
+export type AuthenticatedUser = MeResponse;
 
 export type AuthCredentials = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 export type AuthState = {
-  user: AuthenticatedUser | null
-  initialized: boolean
-}
+  user: AuthenticatedUser | null;
+  initialized: boolean;
+};
 
 const initialState: AuthState = {
   user: null,
   initialized: false,
-}
+};
 
-export const fetchCurrentUser = createAsyncThunk('auth/fetchCurrentUser', () => me())
+export const fetchCurrentUser = createAsyncThunk<
+  AuthenticatedUser,
+  void,
+  { rejectValue: RejectedApiError }
+>("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
+  try {
+    return await me();
+  } catch (error) {
+    return rejectWithValue(toRejectedApiError(error));
+  }
+});
 
 export const loginUser = createAsyncThunk<
   AuthenticatedUser,
   AuthCredentials,
   { rejectValue: RejectedApiError }
->('auth/login', async ({ email, password }, { rejectWithValue }) => {
+>("auth/login", async ({ email, password }, { rejectWithValue }) => {
   try {
-    return await login(email, password)
+    return await login(email, password);
   } catch (error) {
-    return rejectWithValue(toRejectedApiError(error))
+    return rejectWithValue(toRejectedApiError(error));
   }
-})
+});
 
 export const registerUser = createAsyncThunk<
   AuthenticatedUser,
   AuthCredentials,
   { rejectValue: RejectedApiError }
->('auth/register', async ({ email, password }, { rejectWithValue }) => {
+>("auth/register", async ({ email, password }, { rejectWithValue }) => {
   try {
-    return await register(email, password)
+    return await register(email, password);
   } catch (error) {
-    return rejectWithValue(toRejectedApiError(error))
+    return rejectWithValue(toRejectedApiError(error));
   }
-})
+});
 
-export const logoutUser = createAsyncThunk<void, void, { rejectValue: RejectedApiError }>(
-  'auth/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      await logout()
-    } catch (error) {
-      return rejectWithValue(toRejectedApiError(error))
-    }
-  },
-)
+export const logoutUser = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: RejectedApiError }
+>("auth/logout", async (_, { rejectWithValue }) => {
+  try {
+    await logout();
+  } catch (error) {
+    return rejectWithValue(toRejectedApiError(error));
+  }
+});
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
-        state.user = action.payload
-        state.initialized = true
+        state.user = action.payload;
+        state.initialized = true;
       })
       .addCase(fetchCurrentUser.rejected, (state) => {
-        state.user = null
-        state.initialized = true
+        state.user = null;
+        state.initialized = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.user = action.payload
-        state.initialized = true
+        state.user = action.payload;
+        state.initialized = true;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.user = action.payload
-        state.initialized = true
+        state.user = action.payload;
+        state.initialized = true;
       })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null
-        state.initialized = true
-      })
+        state.user = null;
+        state.initialized = true;
+      });
   },
-})
+  selectors: {
+    selectEmail: (state) => state.user?.email,
+    selectName: (state): string | undefined =>
+      state?.user?.email?.split("@")?.[0],
+  },
+});
 
-export default authSlice.reducer
+export const { selectEmail, selectName } = authSlice.selectors;
+export default authSlice.reducer;

@@ -1,28 +1,29 @@
-import { cn } from '@/lib/utils'
-import { getPasswordStrength } from '@/lib/authValidation'
+import { cn } from "@/lib/utils";
+import { getPasswordStrength } from "@/lib/authValidation";
 
 const SEGMENT_COLORS = [
-  'bg-destructive',
-  'bg-amber-500',
-  'bg-yellow-500',
-  'bg-emerald-500',
-] as const
+  "bg-destructive",
+  "bg-amber-500",
+  "bg-yellow-500",
+  "bg-emerald-500",
+] as const;
 
 const LABEL_COLORS = [
-  'text-muted-foreground',
-  'text-destructive',
-  'text-amber-600 dark:text-amber-400',
-  'text-yellow-600 dark:text-yellow-400',
-  'text-emerald-600 dark:text-emerald-400',
-] as const
+  "text-muted-foreground",
+  "text-destructive",
+  "text-amber-600 dark:text-amber-400",
+  "text-yellow-600 dark:text-yellow-400",
+  "text-emerald-600 dark:text-emerald-400",
+] as const;
 
 type PasswordStrengthBarProps = {
-  password: string
-}
+  password: string;
+};
 
 export function PasswordStrengthBar({ password }: PasswordStrengthBarProps) {
-  const { score, label } = getPasswordStrength(password)
-  const fillColor = score === 0 ? 'bg-muted-foreground/40' : SEGMENT_COLORS[score - 1]
+  const { score, label } = getPasswordStrength(password);
+  const fillColor =
+    score === 0 ? "bg-muted-foreground/40" : SEGMENT_COLORS[score - 1];
 
   return (
     <div className="grid gap-1.5">
@@ -39,15 +40,15 @@ export function PasswordStrengthBar({ password }: PasswordStrengthBarProps) {
           <div
             key={index}
             className={cn(
-              'h-1.5 rounded-full bg-muted',
-              score > index && fillColor
+              "h-1.5 rounded-full bg-muted",
+              score > index && fillColor,
             )}
           />
         ))}
       </div>
-      <p className={cn('text-xs', LABEL_COLORS[score])}>
-        {password ? `Password strength: ${label}` : 'Password strength'}
+      <p className={cn("text-xs", LABEL_COLORS[score])}>
+        {password ? `Password strength: ${label}` : "Password strength"}
       </p>
     </div>
-  )
+  );
 }
