@@ -8,10 +8,13 @@ CREATE TABLE users (
 
 CREATE TABLE portfolios (
     id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users (id),
     name VARCHAR(255) NOT NULL,
     base_currency VARCHAR(3) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL
 );
+
+CREATE INDEX idx_portfolios_user_id ON portfolios (user_id);
 
 CREATE TABLE transactions (
     id UUID PRIMARY KEY,
@@ -45,8 +48,9 @@ INSERT INTO users (id, email, password_hash, created_at, updated_at) VALUES (
     NOW()
 );
 
-INSERT INTO portfolios (id, name, base_currency, created_at) VALUES (
+INSERT INTO portfolios (id, user_id, name, base_currency, created_at) VALUES (
     '33333333-3333-3333-3333-333333333301',
+    'd349e6a9-6517-45a0-a46a-3c804c101473',
     'Retirement Metals',
     'CAD',
     NOW()

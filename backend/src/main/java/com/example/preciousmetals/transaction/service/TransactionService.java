@@ -1,5 +1,6 @@
 package com.example.preciousmetals.transaction.service;
 
+import com.example.preciousmetals.auth.model.User;
 import com.example.preciousmetals.portfolio.model.Portfolio;
 import com.example.preciousmetals.portfolio.service.PortfolioService;
 import com.example.preciousmetals.transaction.dto.CreateTransactionRequest;
@@ -25,8 +26,8 @@ public class TransactionService {
   }
 
   @Transactional(readOnly = true)
-  public List<TransactionResponse> listTransactions(UUID portfolioId) {
-    Portfolio portfolio = portfolioService.requirePortfolio(portfolioId);
+  public List<TransactionResponse> listTransactions(User user, UUID portfolioId) {
+    Portfolio portfolio = portfolioService.requirePortfolio(user, portfolioId);
     return transactionRepository
         .findAllByPortfolioOrderByTransactionDateAscCreatedAtAsc(portfolio)
         .stream()
@@ -36,8 +37,8 @@ public class TransactionService {
 
   @Transactional
   public List<TransactionResponse> createTransactions(
-      UUID portfolioId, CreateTransactionsRequest request) {
-    Portfolio portfolio = portfolioService.requirePortfolio(portfolioId);
+      User user, UUID portfolioId, CreateTransactionsRequest request) {
+    Portfolio portfolio = portfolioService.requirePortfolio(user, portfolioId);
     return request.transactions().stream()
         .map(item -> TransactionResponse.from(transactionRepository.saveAndFlush(toEntity(portfolio, item))))
         .toList();

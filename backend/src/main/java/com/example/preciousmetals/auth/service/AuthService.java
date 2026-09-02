@@ -47,6 +47,9 @@ public class AuthService {
   }
 
   public User requireUser(Authentication authentication) {
+    if (authentication == null) {
+      throw new UsernameNotFoundException("User not found");
+    }
     return userRepository
         .findByEmail(authentication.getName())
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));

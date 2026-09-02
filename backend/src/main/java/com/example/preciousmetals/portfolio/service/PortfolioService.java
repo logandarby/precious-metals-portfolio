@@ -1,5 +1,6 @@
 package com.example.preciousmetals.portfolio.service;
 
+import com.example.preciousmetals.auth.model.User;
 import com.example.preciousmetals.portfolio.dto.CreatePortfolioRequest;
 import com.example.preciousmetals.portfolio.dto.UpdatePortfolioRequest;
 import com.example.preciousmetals.portfolio.dto.HistoryPointResponse;
@@ -37,54 +38,56 @@ public class PortfolioService {
   }
 
   @Transactional(readOnly = true)
-  public PortfolioListResponse listPortfolios() {
+  public PortfolioListResponse listPortfolios(User user) {
     LocalDate today = LocalDate.now();
     List<PortfolioResponse> portfolios =
-        portfolioRepository.findAllByOrderByCreatedAtAsc().stream()
+        portfolioRepository.findAllByOwnerOrderByCreatedAtAsc(user).stream()
             .map(portfolio -> toResponse(portfolio, today))
             .toList();
     return PortfolioListResponse.from(portfolios);
   }
 
   @Transactional
-  public PortfolioResponse createPortfolio(CreatePortfolioRequest request) {
-    Portfolio portfolio = portfolioRepository.saveAndFlush(new Portfolio(request.name()));
+  public PortfolioResponse createPortfolio(User user, CreatePortfolioRequest request) {
+    Portfolio portfolio = portfolioRepository.saveAndFlush(new Portfolio(request.name(), user));
     return toResponse(portfolio, LocalDate.now());
   }
 
   @Transactional(readOnly = true)
-  public PortfolioResponse getPortfolio(UUID portfolioId) {
-    return toResponse(requirePortfolio(portfolioId), LocalDate.now());
+  public PortfolioResponse getPortfolio(User user, UUID portfolioId) {
+    return toResponse(requirePortfolio(user, portfolioId), LocalDate.now());
   }
 
   @Transactional
-  public PortfolioResponse renamePortfolio(UUID portfolioId, UpdatePortfolioRequest request) {
-    Portfolio portfolio = requirePortfolio(portfolioId);
+  public PortfolioResponse renamePortfolio(
+      User user, UUID portfolioId, UpdatePortfolioRequest request) {
+    Portfolio portfolio = requirePortfolio(user, portfolioId);
     portfolio.rename(request.name());
     return toResponse(portfolioRepository.saveAndFlush(portfolio), LocalDate.now());
   }
 
   @Transactional
-  public void deletePortfolio(UUID portfolioId) {
-    Portfolio portfolio = requirePortfolio(portfolioId);
+  public void deletePortfolio(User user, UUID portfolioId) {
+    Portfolio portfolio = requirePortfolio(user, portfolioId);
     transactionRepository.deleteAllByPortfolio(portfolio);
     portfolioRepository.delete(portfolio);
   }
 
   @Transactional(readOnly = true)
-  public ValuationResult getValue(UUID portfolioId) {
-    Portfolio portfolio = requirePortfolio(portfolioId);
+  public ValuationResult getValue(User user, UUID portfolioId) {
+    Portfolio portfolio = requirePortfolio(user, portfolioId);
     return valuationService.valueAsOf(transactionsOf(portfolio), LocalDate.now());
   }
 
   @Transactional(readOnly = true)
-  public List<HistoryPointResponse> getHistory(UUID portfolioId) {
-    return getHistory(portfolioId, HistoryRange.ALL);
+  public List<HistoryPointResponse> getHistory(User user, UUID portfolioId) {
+    return getHistory(user, portfolioId, HistoryRange.ALL);
   }
 
   @Transactional(readOnly = true)
-  public List<HistoryPointResponse> getHistory(UUID portfolioId, HistoryRange range) {
-    Portfolio portfolio = requirePortfolio(portfolioId);
+  public List<HistoryPointResponse> getHistory(
+      User user, UUID portfolioId, HistoryRange range) {
+    Portfolio portfolio = requirePortfolio(user, portfolioId);
     List<Transaction> transactions = transactionsOf(portfolio);
     if (transactions.isEmpty()) {
       return List.of();
@@ -111,8 +114,10 @@ public class PortfolioService {
     return points;
   }
 
-  public Portfolio requirePortfolio(UUID portfolioId) {
-    return portfolioRepository.findById(portfolioId).orElseThrow(PortfolioNotFoundException::new);
+  public Portfolio requirePortfolio(User user, UUID portfolioId) {
+    return portfolioRepository
+        .findByIdAndOwner(portfolioId, user)
+        .orElseThrow(PortfolioNotFoundException::new);
   }
 
   private PortfolioResponse toResponse(Portfolio portfolio, LocalDate asOf) {
