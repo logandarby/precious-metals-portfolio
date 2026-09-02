@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   CartesianGrid,
@@ -12,17 +12,21 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { CircleAlert } from "lucide-react";
-import { ApiError } from "@/api/client";
+import { ArrowLeft, CircleAlert } from "lucide-react";
+import { type HistoryRange } from "@/api/portfolios";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { selectPortfolios } from "@/store/portfoliosSlice";
 import {
-  getPortfolio,
-  getPortfolioHistory,
-  listTransactions,
-  type HistoryPoint,
-  type HistoryRange,
-  type PortfolioResponse,
-  type TransactionResponse,
-} from "@/api/portfolios";
+  fetchSelectedHistory,
+  fetchSelectedPortfolio,
+  selectCurrentPortfolio,
+  selectHistory,
+  selectHistoryLoading,
+  selectHistoryRange,
+  selectSelectedError,
+  selectTransactions,
+  setHistoryRange,
+} from "@/store/selectedPortfolioSlice";
 import {
   formatCad,
   formatPercent,
@@ -67,91 +71,57 @@ const HISTORY_RANGES: { value: HistoryRange; label: string }[] = [
 export function PortfolioDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [portfolio, setPortfolio] = useState<PortfolioResponse | null>(null);
-  const [history, setHistory] = useState<HistoryPoint[]>([]);
-  const [historyRange, setHistoryRange] = useState<HistoryRange>("ALL");
-  const [historyLoading, setHistoryLoading] = useState(false);
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const selected = useAppSelector(selectCurrentPortfolio);
+  const listItems = useAppSelector(selectPortfolios);
+  const error = useAppSelector(selectSelectedError);
+  const transactions = useAppSelector(selectTransactions);
+  const history = useAppSelector(selectHistory);
+  const historyRange = useAppSelector(selectHistoryRange);
+  const historyLoading = useAppSelector(selectHistoryLoading);
 
-  useEffect(() => {
-    if (!id) {
-      setError("Portfolio not found");
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const [nextPortfolio, nextTransactions] = await Promise.all([
-          getPortfolio(id),
-          listTransactions(id),
-        ]);
-        if (cancelled) {
-          return;
-        }
-        setPortfolio(nextPortfolio);
-        setTransactions(nextTransactions);
-      } catch (cause) {
-        if (cancelled) {
-          return;
-        }
-        const message =
-          cause instanceof ApiError
-            ? cause.message
-            : "Could not load portfolio";
-        setError(message);
-        setPortfolio(null);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
+  const portfolio =
+    selected?.id === id
+      ? selected
+      : (listItems.find((item) => item.id === id) ?? null);
 
   useEffect(() => {
     if (!id) {
       return;
     }
+    void dispatch(fetchSelectedPortfolio({ id }));
+  }, [dispatch, id]);
 
-    let cancelled = false;
-
-    async function loadHistory() {
-      setHistoryLoading(true);
-      try {
-        const nextHistory = await getPortfolioHistory(id, historyRange);
-        if (!cancelled) {
-          setHistory(nextHistory);
-        }
-      } catch {
-        if (!cancelled) {
-          setHistory([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setHistoryLoading(false);
-        }
-      }
+  useEffect(() => {
+    if (!id) {
+      return;
     }
+    void dispatch(fetchSelectedHistory({ id, range: historyRange }));
+  }, [dispatch, id, historyRange]);
 
-    void loadHistory();
-    return () => {
-      cancelled = true;
-    };
-  }, [id, historyRange]);
+  if (!id) {
+    return (
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
+        <Alert variant="destructive">
+          <CircleAlert />
+          <AlertTitle>Portfolio unavailable</AlertTitle>
+          <AlertDescription>Portfolio not found</AlertDescription>
+        </Alert>
+        <Link
+          to="/portfolios"
+          className={buttonVariants({
+            variant: "outline",
+            className: "self-start",
+          })}
+        >
+          <ArrowLeft data-icon="inline-start" />
+          Back to portfolios
+        </Link>
+      </div>
+    );
+  }
 
-  if (loading) {
+  if (!portfolio && !error) {
     return <PortfolioDetailSkeleton />;
   }
 
@@ -163,7 +133,14 @@ export function PortfolioDetailPage() {
           <AlertTitle>Portfolio unavailable</AlertTitle>
           <AlertDescription>{error ?? "Portfolio not found"}</AlertDescription>
         </Alert>
-        <Link to="/portfolios" className={buttonVariants({ variant: "outline" })}>
+        <Link
+          to="/portfolios"
+          className={buttonVariants({
+            variant: "outline",
+            className: "self-start",
+          })}
+        >
+          <ArrowLeft data-icon="inline-start" />
           Back to portfolios
         </Link>
       </div>
@@ -185,18 +162,21 @@ export function PortfolioDetailPage() {
       <div>
         <Link
           to="/portfolios"
-          className="text-xs tracking-[0.16em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+          className={buttonVariants({
+            variant: "outline",
+            className: "self-start",
+          })}
         >
-          Portfolios
+          <ArrowLeft data-icon="inline-start" />
+          Back to portfolios
         </Link>
-        <div className="mt-1 flex flex-wrap items-center justify-between gap-4">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <h1 className="font-heading text-3xl font-semibold">
               {portfolio.name}
             </h1>
             <PortfolioMenu
               portfolio={portfolio}
-              onRenamed={setPortfolio}
               onDeleted={() => navigate("/portfolios", { replace: true })}
             />
           </div>
@@ -310,7 +290,7 @@ export function PortfolioDetailPage() {
                     size="xs"
                     variant={historyRange === option.value ? "default" : "ghost"}
                     className="rounded-none"
-                    onClick={() => setHistoryRange(option.value)}
+                    onClick={() => dispatch(setHistoryRange(option.value))}
                   >
                     {option.label}
                   </Button>
@@ -443,8 +423,8 @@ function PortfolioDetailSkeleton() {
     >
       <span className="sr-only">Loading portfolio</span>
       <div>
-        <Skeleton className="h-3 w-20" />
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
+        <Skeleton className="h-8 w-44" />
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
           <Skeleton className="h-9 w-56" />
           <Skeleton className="h-9 w-36" />
         </div>

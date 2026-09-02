@@ -1,10 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { createLogger } from "redux-logger";
 import authReducer, { fetchCurrentUser } from "@/store/authSlice";
+import portfoliosReducer from "@/store/portfoliosSlice";
+import selectedPortfolioReducer from "@/store/selectedPortfolioSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    portfolios: portfoliosReducer,
+    selectedPortfolio: selectedPortfolioReducer,
   },
   middleware: (getDefaultMiddleware) => {
     if (import.meta.env.DEV) {

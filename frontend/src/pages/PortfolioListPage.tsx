@@ -5,13 +5,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import { CircleAlert } from "lucide-react";
-import { ApiError } from "@/api/client";
+import { isRejectedApiError } from "@/api/client";
+import { PortfolioMenu } from "@/components/PortfolioMenu";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   createPortfolio,
-  listPortfolios,
-  type PortfolioResponse,
-} from "@/api/portfolios";
-import { PortfolioMenu } from "@/components/PortfolioMenu";
+  fetchPortfolios,
+  selectPortfolios,
+  selectPortfoliosError,
+  selectPortfoliosLoaded,
+  selectPortfoliosLoading,
+  selectTotalValue,
+} from "@/store/portfoliosSlice";
 import {
   formatCad,
   formatSignedCad,
@@ -47,10 +52,12 @@ type CreateFormValues = z.infer<typeof createSchema>;
 
 export function PortfolioListPage() {
   const navigate = useNavigate();
-  const [portfolios, setPortfolios] = useState<PortfolioResponse[]>([]);
-  const [totalValue, setTotalValue] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const portfolios = useAppSelector(selectPortfolios);
+  const totalValue = useAppSelector(selectTotalValue);
+  const loaded = useAppSelector(selectPortfoliosLoaded);
+  const loading = useAppSelector(selectPortfoliosLoading);
+  const error = useAppSelector(selectPortfoliosError);
   const [open, setOpen] = useState(false);
 
   const {
@@ -63,36 +70,21 @@ export function PortfolioListPage() {
     defaultValues: { name: "" },
   });
 
-  async function load() {
-    setError(null);
-    try {
-      const data = await listPortfolios();
-      setPortfolios(data.portfolios);
-      setTotalValue(data.totalValue);
-    } catch (cause) {
-      const message =
-        cause instanceof ApiError ? cause.message : "Could not load portfolios";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    void load();
-  }, []);
+    void dispatch(fetchPortfolios());
+  }, [dispatch]);
 
   async function onValid({ name }: CreateFormValues) {
     try {
-      const created = await createPortfolio(name);
+      const created = await dispatch(createPortfolio(name)).unwrap();
       toast.success("Portfolio created");
       reset();
       setOpen(false);
       navigate(`/portfolios/${created.id}`);
     } catch (cause) {
-      const message =
-        cause instanceof ApiError ? cause.message : "Could not create portfolio";
-      toast.error(message);
+      toast.error(
+        isRejectedApiError(cause) ? cause.message : "Could not create portfolio",
+      );
     }
   }
 
@@ -161,7 +153,7 @@ export function PortfolioListPage() {
         </Alert>
       ) : null}
 
-      {loading ? (
+      {loading && !loaded ? (
         <PortfolioListSkeleton />
       ) : (
         <>
@@ -198,19 +190,7 @@ export function PortfolioListPage() {
                   className="relative h-full transition-colors hover:bg-accent/30"
                 >
                   <div className="absolute top-3 right-3 z-10">
-                    <PortfolioMenu
-                      portfolio={portfolio}
-                      onRenamed={(updated) => {
-                        setPortfolios((current) =>
-                          current.map((item) =>
-                            item.id === updated.id ? updated : item,
-                          ),
-                        );
-                      }}
-                      onDeleted={() => {
-                        void load();
-                      }}
-                    />
+                    <PortfolioMenu portfolio={portfolio} />
                   </div>
                   <Link
                     to={`/portfolios/${portfolio.id}`}

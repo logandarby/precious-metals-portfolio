@@ -4,12 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Menu } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ApiError } from "@/api/client";
+import { isRejectedApiError } from "@/api/client";
+import { type PortfolioResponse } from "@/api/portfolios";
+import { useAppDispatch } from "@/store/hooks";
 import {
   deletePortfolio,
   renamePortfolio,
-  type PortfolioResponse,
-} from "@/api/portfolios";
+} from "@/store/portfoliosSlice";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,15 +37,14 @@ type RenameFormValues = z.infer<typeof renameSchema>;
 
 type PortfolioMenuProps = {
   portfolio: Pick<PortfolioResponse, "id" | "name">;
-  onRenamed: (portfolio: PortfolioResponse) => void;
-  onDeleted: () => void;
+  onDeleted?: () => void;
 };
 
 export function PortfolioMenu({
   portfolio,
-  onRenamed,
   onDeleted,
 }: PortfolioMenuProps) {
+  const dispatch = useAppDispatch();
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -61,14 +61,15 @@ export function PortfolioMenu({
 
   async function onRename({ name }: RenameFormValues) {
     try {
-      const updated = await renamePortfolio(portfolio.id, name);
+      const updated = await dispatch(
+        renamePortfolio({ id: portfolio.id, name }),
+      ).unwrap();
       toast.success("Portfolio renamed");
       setRenameOpen(false);
       reset({ name: updated.name });
-      onRenamed(updated);
     } catch (cause) {
       toast.error(
-        cause instanceof ApiError ? cause.message : "Could not rename portfolio",
+        isRejectedApiError(cause) ? cause.message : "Could not rename portfolio",
       );
     }
   }
@@ -76,13 +77,13 @@ export function PortfolioMenu({
   async function onDelete() {
     setDeleting(true);
     try {
-      await deletePortfolio(portfolio.id);
+      await dispatch(deletePortfolio(portfolio.id)).unwrap();
       toast.success("Portfolio deleted");
       setDeleteOpen(false);
-      onDeleted();
+      onDeleted?.();
     } catch (cause) {
       toast.error(
-        cause instanceof ApiError ? cause.message : "Could not delete portfolio",
+        isRejectedApiError(cause) ? cause.message : "Could not delete portfolio",
       );
     } finally {
       setDeleting(false);

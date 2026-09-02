@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "@fontsource-variable/newsreader/opsz.css";
 @import "@fontsource-variable/roboto";
+@import "@fontsource-variable/inconsolata";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,7 +46,8 @@
   --font-sans: var(--font-serif);
   --font-heading: var(--font-serif);
   --font-mono:
-    ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    "Inconsolata Variable", Inconsolata, ui-monospace, "Cascadia Code",
+    "Source Code Pro", Menlo, Consolas, monospace;
   --radius: 0rem;
   --shadow-x: 0px;
   --shadow-y: 6px;
@@ -115,7 +117,8 @@
     serif;
   --font-heading: var(--font-serif);
   --font-mono:
-    ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    "Inconsolata Variable", Inconsolata, ui-monospace, "Cascadia Code",
+    "Source Code Pro", Menlo, Consolas, monospace;
   --radius: 0rem;
   --shadow-x: 0px;
   --shadow-y: 12px;

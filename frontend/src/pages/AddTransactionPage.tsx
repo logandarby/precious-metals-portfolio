@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Controller,
   useFieldArray,
@@ -9,9 +9,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { CircleAlert } from "lucide-react";
-import { ApiError } from "@/api/client";
-import { createTransactions } from "@/api/portfolios";
+import { ArrowLeft, CircleAlert } from "lucide-react";
+import { isRejectedApiError } from "@/api/client";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { selectPortfolios } from "@/store/portfoliosSlice";
+import {
+  addPortfolioTransactions,
+  fetchSelectedPortfolio,
+  selectCurrentPortfolio,
+} from "@/store/selectedPortfolioSlice";
 import { DatePicker } from "@/components/DatePicker";
 import { METAL_LABELS, METAL_ORDER, UNIT_LABELS } from "@/lib/format";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -65,7 +71,22 @@ function emptyTransaction(): FormValues["transactions"][number] {
 export function AddTransactionPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const selected = useAppSelector(selectCurrentPortfolio);
+  const listItems = useAppSelector(selectPortfolios);
   const [error, setError] = useState<string | null>(null);
+
+  const portfolio =
+    selected?.id === id
+      ? selected
+      : (listItems.find((item) => item.id === id) ?? null);
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    void dispatch(fetchSelectedPortfolio({ id }));
+  }, [dispatch, id]);
 
   const {
     control,
@@ -91,7 +112,12 @@ export function AddTransactionPage() {
     }
     setError(null);
     try {
-      await createTransactions(id, values.transactions);
+      await dispatch(
+        addPortfolioTransactions({
+          portfolioId: id,
+          transactions: values.transactions,
+        }),
+      ).unwrap();
       toast.success(
         values.transactions.length === 1
           ? "Purchase added"
@@ -99,8 +125,9 @@ export function AddTransactionPage() {
       );
       navigate(`/portfolios/${id}`, { replace: true });
     } catch (cause) {
-      const message =
-        cause instanceof ApiError ? cause.message : "Could not add transactions";
+      const message = isRejectedApiError(cause)
+        ? cause.message
+        : "Could not add transactions";
       setError(message);
       toast.error(message);
     }
@@ -110,15 +137,18 @@ export function AddTransactionPage() {
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
       <Link
         to={id ? `/portfolios/${id}` : "/portfolios"}
-        className={buttonVariants({ variant: "outline" })}
+        className={buttonVariants({ variant: "outline", className: "self-start" })}
       >
+        <ArrowLeft data-icon="inline-start" />
         Back to portfolio
       </Link>
       <Card>
         <CardHeader>
           <CardTitle>Add transactions</CardTitle>
           <CardDescription>
-            Log purchases in CAD. You can add more than one at a time.
+            {portfolio
+              ? `Log purchases in CAD for ${portfolio.name}. You can add more than one at a time.`
+              : "Log purchases in CAD. You can add more than one at a time."}
           </CardDescription>
         </CardHeader>
         <CardContent>
