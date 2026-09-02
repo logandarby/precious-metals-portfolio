@@ -1,0 +1,82 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: precious-metals-frontend
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      # Mount source code for hot reload
+      - ./frontend:/app
+
+      # Keep node_modules inside the container
+      - /app/node_modules
+
+    environment:
+      VITE_API_URL: http://localhost:8080
+
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: precious-metals-backend
+
+    working_dir: /app
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      # Mount source; a watcher inside the container recompiles on change.
+      - ./backend:/app
+      # Keep compiled classes in the container (host target/ can conflict).
+      - /app/target
+      - maven-repo:/root/.m2
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      SPRING_DEVTOOLS_RESTART_POLLINTERVAL: 1s
+      SPRING_DEVTOOLS_RESTART_QUIETPERIOD: 400ms
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/precious_metals
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17-alpine
+
+    container_name: precious-metals-postgres
+
+    environment:
+      POSTGRES_DB: precious_metals
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d precious_metals"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  maven-repo:
