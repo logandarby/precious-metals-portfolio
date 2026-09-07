@@ -17,17 +17,19 @@ docker compose up --build
 
 - UI: http://localhost:5173
 - API: http://localhost:8080
+- Mock market API: http://localhost:8090
 - Postgres: localhost:5432 (`precious_metals`)
 
 Data lives in a Compose volume.
 
-## What you can do
+## Features
 
-- Register & Log in
-- Create a portfolio
+- Authentication
+- Create/delete a portfolio
 - Add a purchase: metal, quantity (oz or grams), price, date
 - See transaction history
-- See portfolio metrics
+- See portfolio metrics calculated on BE
 - See historical portfolio value
+- BE Automatically fetches and persists market prices on a configurable schedule (from mock server API)
 
 The API covers auth, portfolios, transactions, current value, and history. The UI is login/register plus the three portfolio screens.

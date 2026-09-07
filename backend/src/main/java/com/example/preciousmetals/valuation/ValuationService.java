@@ -6,7 +6,7 @@ import com.example.preciousmetals.market.MarketPriceProvider;
 import com.example.preciousmetals.transaction.model.Transaction;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,7 +26,7 @@ public class ValuationService {
     this.marketPriceProvider = marketPriceProvider;
   }
 
-  public ValuationResult valueAsOf(List<Transaction> transactions, LocalDate asOf) {
+  public ValuationResult valueAsOf(List<Transaction> transactions, OffsetDateTime asOf) {
     List<Transaction> included =
         transactions.stream()
             .filter(transaction -> !transaction.getTransactionDate().isAfter(asOf))

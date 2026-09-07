@@ -22,7 +22,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -72,7 +72,7 @@ public class Transaction {
 
   @NotNull
   @Column(name = "transaction_date", nullable = false)
-  private LocalDate transactionDate;
+  private OffsetDateTime transactionDate;
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
@@ -86,7 +86,7 @@ public class Transaction {
       BigDecimal quantity,
       WeightUnit unit,
       BigDecimal purchasePrice,
-      LocalDate transactionDate) {
+      OffsetDateTime transactionDate) {
     this.portfolio = portfolio;
     this.metal = metal;
     this.quantity = quantity;

@@ -22,3 +22,6 @@ logging:
 app:
   cors:
     allowed-origins: http://localhost:5173
+  market-price:
+    api-url: ${MARKET_PRICE_API_URL:http://localhost:8090}
+    refresh-cron: ${MARKET_PRICE_REFRESH_CRON:0 0 6 * * *}

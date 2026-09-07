@@ -4,7 +4,7 @@ import com.example.preciousmetals.common.model.Metal;
 import com.example.preciousmetals.common.model.WeightUnit;
 import com.example.preciousmetals.transaction.model.Transaction;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public record TransactionResponse(
@@ -15,7 +15,7 @@ public record TransactionResponse(
     WeightUnit unit,
     BigDecimal purchasePrice,
     String currency,
-    LocalDate transactionDate) {
+    OffsetDateTime transactionDate) {
 
   public static TransactionResponse from(Transaction transaction) {
     return new TransactionResponse(

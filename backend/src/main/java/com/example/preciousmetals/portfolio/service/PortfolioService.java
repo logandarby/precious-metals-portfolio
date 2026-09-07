@@ -14,7 +14,8 @@ import com.example.preciousmetals.transaction.model.Transaction;
 import com.example.preciousmetals.transaction.repository.TransactionRepository;
 import com.example.preciousmetals.valuation.ValuationResult;
 import com.example.preciousmetals.valuation.ValuationService;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,10 +40,10 @@ public class PortfolioService {
 
   @Transactional(readOnly = true)
   public PortfolioListResponse listPortfolios(User user) {
-    LocalDate today = LocalDate.now();
+    OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
     List<PortfolioResponse> portfolios =
         portfolioRepository.findAllByOwnerOrderByCreatedAtAsc(user).stream()
-            .map(portfolio -> toResponse(portfolio, today))
+            .map(portfolio -> toResponse(portfolio, now))
             .toList();
     return PortfolioListResponse.from(portfolios);
   }
@@ -50,12 +51,12 @@ public class PortfolioService {
   @Transactional
   public PortfolioResponse createPortfolio(User user, CreatePortfolioRequest request) {
     Portfolio portfolio = portfolioRepository.saveAndFlush(new Portfolio(request.name(), user));
-    return toResponse(portfolio, LocalDate.now());
+    return toResponse(portfolio, OffsetDateTime.now(ZoneOffset.UTC));
   }
 
   @Transactional(readOnly = true)
   public PortfolioResponse getPortfolio(User user, UUID portfolioId) {
-    return toResponse(requirePortfolio(user, portfolioId), LocalDate.now());
+    return toResponse(requirePortfolio(user, portfolioId), OffsetDateTime.now(ZoneOffset.UTC));
   }
 
   @Transactional
@@ -63,7 +64,8 @@ public class PortfolioService {
       User user, UUID portfolioId, UpdatePortfolioRequest request) {
     Portfolio portfolio = requirePortfolio(user, portfolioId);
     portfolio.rename(request.name());
-    return toResponse(portfolioRepository.saveAndFlush(portfolio), LocalDate.now());
+    return toResponse(
+      portfolioRepository.saveAndFlush(portfolio), OffsetDateTime.now(ZoneOffset.UTC));
   }
 
   @Transactional
@@ -76,7 +78,8 @@ public class PortfolioService {
   @Transactional(readOnly = true)
   public ValuationResult getValue(User user, UUID portfolioId) {
     Portfolio portfolio = requirePortfolio(user, portfolioId);
-    return valuationService.valueAsOf(transactionsOf(portfolio), LocalDate.now());
+    return valuationService.valueAsOf(
+      transactionsOf(portfolio), OffsetDateTime.now(ZoneOffset.UTC));
   }
 
   @Transactional(readOnly = true)
@@ -92,18 +95,21 @@ public class PortfolioService {
     if (transactions.isEmpty()) {
       return List.of();
     }
-    LocalDate firstPurchase =
+    OffsetDateTime firstPurchase =
         transactions.stream()
             .map(Transaction::getTransactionDate)
-            .min(LocalDate::compareTo)
+        .map(date -> date.withOffsetSameInstant(ZoneOffset.UTC))
+        .min(OffsetDateTime::compareTo)
             .orElseThrow();
-    LocalDate end = LocalDate.now();
-    LocalDate start = range.startDate(end, firstPurchase);
+    OffsetDateTime end = OffsetDateTime.now(ZoneOffset.UTC);
+    OffsetDateTime start = range.startDate(end, firstPurchase);
     if (start.isAfter(end)) {
       return List.of();
     }
     List<HistoryPointResponse> points = new ArrayList<>();
-    for (LocalDate date = start; !date.isAfter(end); date = date.plus(range.step())) {
+    for (OffsetDateTime date = start;
+      !date.isAfter(end);
+      date = date.plus(range.step())) {
       points.add(
           new HistoryPointResponse(date, valuationService.valueAsOf(transactions, date).value()));
     }
@@ -120,7 +126,7 @@ public class PortfolioService {
         .orElseThrow(PortfolioNotFoundException::new);
   }
 
-  private PortfolioResponse toResponse(Portfolio portfolio, LocalDate asOf) {
+  private PortfolioResponse toResponse(Portfolio portfolio, OffsetDateTime asOf) {
     return PortfolioResponse.from(
         portfolio, valuationService.valueAsOf(transactionsOf(portfolio), asOf));
   }

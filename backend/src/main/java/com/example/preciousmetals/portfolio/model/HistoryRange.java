@@ -1,10 +1,13 @@
 package com.example.preciousmetals.portfolio.model;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.Period;
+import java.time.Duration;
+import java.time.temporal.TemporalAmount;
 import java.util.Arrays;
 
 public enum HistoryRange {
+  D1("1D", Duration.ofHours(1)),
   W1("1W", Period.ofDays(1)),
   M1("1M", Period.ofDays(1)),
   M3("3M", Period.ofWeeks(1)),
@@ -13,9 +16,9 @@ public enum HistoryRange {
   ALL("ALL", Period.ofWeeks(1));
 
   private final String code;
-  private final Period step;
+  private final TemporalAmount step;
 
-  HistoryRange(String code, Period step) {
+  HistoryRange(String code, TemporalAmount step) {
     this.code = code;
     this.step = step;
   }
@@ -24,18 +27,25 @@ public enum HistoryRange {
     return code;
   }
 
-  public Period step() {
+  public TemporalAmount step() {
     return step;
   }
 
-  public LocalDate startDate(LocalDate end, LocalDate firstPurchase) {
-    LocalDate rangeStart =
+  public OffsetDateTime startDate(OffsetDateTime end, OffsetDateTime firstPurchase) {
+    OffsetDateTime rangeStart =
         switch (this) {
+          case D1 -> end.minusDays(1);
           case W1 -> end.minusWeeks(1);
           case M1 -> end.minusMonths(1);
           case M3 -> end.minusMonths(3);
           case Y1 -> end.minusYears(1);
-          case YTD -> LocalDate.of(end.getYear(), 1, 1);
+            case YTD ->
+              end.withDayOfYear(1)
+                .withMonth(1)
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
           case ALL -> firstPurchase;
         };
     return firstPurchase.isAfter(rangeStart) ? firstPurchase : rangeStart;

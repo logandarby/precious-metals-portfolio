@@ -1,6 +1,6 @@
 package com.example.preciousmetals.portfolio.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
-public record HistoryPointResponse(LocalDate date, BigDecimal value) {}
+public record HistoryPointResponse(OffsetDateTime date, BigDecimal value) {}

@@ -76,7 +76,7 @@ export function deletePortfolio(id: string): Promise<void> {
   return apiJson<void>(`/api/portfolios/${id}`, { method: "DELETE" });
 }
 
-export type HistoryRange = "1W" | "1M" | "3M" | "1Y" | "YTD" | "ALL";
+export type HistoryRange = "1D" | "1W" | "1M" | "3M" | "1Y" | "YTD" | "ALL";
 
 export function getPortfolioHistory(
   id: string,

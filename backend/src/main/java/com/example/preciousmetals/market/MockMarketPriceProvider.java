@@ -2,26 +2,27 @@ package com.example.preciousmetals.market;
 
 import com.example.preciousmetals.common.model.Metal;
 import com.example.preciousmetals.market.repository.MetalPriceRepository;
-import com.example.preciousmetals.portfolio.model.Portfolio;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MockMarketPriceProvider implements MarketPriceProvider {
 
-  private final MetalPriceRepository metalPriceRepository;
+	private static final String CURRENCY = "CAD";
 
-  public MockMarketPriceProvider(MetalPriceRepository metalPriceRepository) {
-    this.metalPriceRepository = metalPriceRepository;
-  }
+	private final MetalPriceRepository metalPriceRepository;
 
-  @Override
-  public Optional<BigDecimal> pricePerTroyOunce(Metal metal, LocalDate date) {
-    return metalPriceRepository
-        .findFirstByMetalAndCurrencyAndPriceDateLessThanEqualOrderByPriceDateDesc(
-            metal, Portfolio.CAD, date)
-        .map(price -> price.getPrice());
-  }
+	public MockMarketPriceProvider(MetalPriceRepository metalPriceRepository) {
+		this.metalPriceRepository = metalPriceRepository;
+	}
+
+	@Override
+	public Optional<BigDecimal> pricePerTroyOunce(Metal metal, OffsetDateTime asOf) {
+		return metalPriceRepository
+				.findFirstByMetalAndCurrencyAndPriceDateLessThanEqualOrderByPriceDateDesc(
+						metal, CURRENCY, asOf)
+				.map(price -> price.getPrice());
+	}
 }

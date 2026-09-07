@@ -58,8 +58,10 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useUserPreference } from "@/hooks/useUserPreference";
 
 const HISTORY_RANGES: { value: HistoryRange; label: string }[] = [
+  { value: "1D", label: "1D" },
   { value: "1W", label: "1W" },
   { value: "1M", label: "1M" },
   { value: "3M", label: "3M" },
@@ -67,6 +69,16 @@ const HISTORY_RANGES: { value: HistoryRange; label: string }[] = [
   { value: "YTD", label: "YTD" },
   { value: "ALL", label: "All" },
 ];
+
+const DEFAULT_HISTORY_RANGE: HistoryRange = "ALL";
+const HISTORY_RANGE_PREFERENCE_KEY = "portfolio.historyRange";
+
+function isHistoryRange(value: unknown): value is HistoryRange {
+  return (
+    typeof value === "string" &&
+    HISTORY_RANGES.some((option) => option.value === value)
+  );
+}
 
 export function PortfolioDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -77,8 +89,26 @@ export function PortfolioDetailPage() {
   const error = useAppSelector(selectSelectedError);
   const transactions = useAppSelector(selectTransactions);
   const history = useAppSelector(selectHistory);
-  const historyRange = useAppSelector(selectHistoryRange);
+  const selectedHistoryRange = useAppSelector(selectHistoryRange);
+  const {
+    value: historyRange,
+    onChange: setHistoryRangePreference,
+    reset: resetHistoryRange,
+  } = useUserPreference<HistoryRange>(
+    HISTORY_RANGE_PREFERENCE_KEY,
+    DEFAULT_HISTORY_RANGE,
+    { validate: isHistoryRange },
+  );
   const historyLoading = useAppSelector(selectHistoryLoading);
+
+  useEffect(() => {
+    if (!isHistoryRange(historyRange)) {
+      resetHistoryRange();
+    }
+    if (selectedHistoryRange !== historyRange) {
+      dispatch(setHistoryRange(historyRange));
+    }
+  }, [dispatch, historyRange, resetHistoryRange, selectedHistoryRange]);
 
   const portfolio =
     selected?.id === id
@@ -290,7 +320,10 @@ export function PortfolioDetailPage() {
                     size="xs"
                     variant={historyRange === option.value ? "default" : "ghost"}
                     className="rounded-none"
-                    onClick={() => dispatch(setHistoryRange(option.value))}
+                    onClick={() => {
+                      setHistoryRangePreference(option.value);
+                      dispatch(setHistoryRange(option.value));
+                    }}
                   >
                     {option.label}
                   </Button>
@@ -321,7 +354,9 @@ export function PortfolioDetailPage() {
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={(date: string) =>
-                        historyRange === "1W" || historyRange === "1M"
+                        historyRange === "1D"
+                          ? date.slice(11, 16)
+                          : historyRange === "1W" || historyRange === "1M"
                           ? date.slice(5)
                           : date
                       }
