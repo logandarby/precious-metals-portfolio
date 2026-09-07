@@ -354,11 +354,7 @@ export function PortfolioDetailPage() {
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={(date: string) =>
-                        historyRange === "1D"
-                          ? date.slice(11, 16)
-                          : historyRange === "1W" || historyRange === "1M"
-                          ? date.slice(5)
-                          : date
+                        formatHistoryDate(date, historyRange)
                       }
                     />
                     <YAxis
@@ -590,7 +586,7 @@ function signedTone(amount: number | string | null | undefined): string {
 }
 
 function formatDate(value: string): string {
-  const parsed = new Date(`${value}T00:00:00`);
+  const parsed = parseDateValue(value);
   if (Number.isNaN(parsed.getTime())) {
     return value;
   }
@@ -599,4 +595,29 @@ function formatDate(value: string): string {
     month: "short",
     day: "numeric",
   }).format(parsed);
+}
+
+function formatHistoryDate(value: string, range: HistoryRange): string {
+  const parsed = parseDateValue(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+  if (range === "1D") {
+    return new Intl.DateTimeFormat("en-CA", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(parsed);
+  }
+  return new Intl.DateTimeFormat("en-CA", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsed);
+}
+
+function parseDateValue(value: string): Date {
+  return new Date(
+    /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00` : value,
+  );
 }
