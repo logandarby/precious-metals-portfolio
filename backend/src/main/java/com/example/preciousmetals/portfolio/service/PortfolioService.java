@@ -12,9 +12,11 @@ import com.example.preciousmetals.portfolio.model.Portfolio;
 import com.example.preciousmetals.portfolio.repository.PortfolioRepository;
 import com.example.preciousmetals.transaction.model.Transaction;
 import com.example.preciousmetals.transaction.repository.TransactionRepository;
+import com.example.preciousmetals.valuation.PortfolioValuationService;
 import com.example.preciousmetals.valuation.ValuationResult;
 import com.example.preciousmetals.valuation.ValuationService;
 import java.time.OffsetDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +30,30 @@ public class PortfolioService {
   private final PortfolioRepository portfolioRepository;
   private final TransactionRepository transactionRepository;
   private final ValuationService valuationService;
+  private final PortfolioValuationService portfolioValuationService;
 
   public PortfolioService(
       PortfolioRepository portfolioRepository,
       TransactionRepository transactionRepository,
       ValuationService valuationService) {
+    this(
+        portfolioRepository,
+        transactionRepository,
+        valuationService,
+        new PortfolioValuationService(
+            portfolioRepository, transactionRepository, valuationService));
+  }
+
+  @Autowired
+  public PortfolioService(
+      PortfolioRepository portfolioRepository,
+      TransactionRepository transactionRepository,
+      ValuationService valuationService,
+      PortfolioValuationService portfolioValuationService) {
     this.portfolioRepository = portfolioRepository;
     this.transactionRepository = transactionRepository;
     this.valuationService = valuationService;
+    this.portfolioValuationService = portfolioValuationService;
   }
 
   @Transactional(readOnly = true)
@@ -73,13 +91,13 @@ public class PortfolioService {
     Portfolio portfolio = requirePortfolio(user, portfolioId);
     // DB handles cascading deletion of transactions
     portfolioRepository.delete(portfolio);
+    portfolioValuationService.evictCache(portfolioId);
   }
 
   @Transactional(readOnly = true)
   public ValuationResult getValue(User user, UUID portfolioId) {
     Portfolio portfolio = requirePortfolio(user, portfolioId);
-    return valuationService.valueAsOf(
-      transactionsOf(portfolio), OffsetDateTime.now(ZoneOffset.UTC));
+    return portfolioValuationService.getValue(user, portfolioId);
   }
 
   @Transactional(readOnly = true)
@@ -128,7 +146,8 @@ public class PortfolioService {
 
   private PortfolioResponse toResponse(Portfolio portfolio, OffsetDateTime asOf) {
     return PortfolioResponse.from(
-        portfolio, valuationService.valueAsOf(transactionsOf(portfolio), asOf));
+        portfolio,
+        portfolioValuationService.getValue(portfolio));
   }
 
   private List<Transaction> transactionsOf(Portfolio portfolio) {

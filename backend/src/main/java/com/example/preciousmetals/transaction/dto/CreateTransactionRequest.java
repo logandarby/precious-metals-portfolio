@@ -6,7 +6,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 
 public record CreateTransactionRequest(
     @NotNull(message = "Metal is required") Metal metal,
@@ -19,4 +19,4 @@ public record CreateTransactionRequest(
         @DecimalMin(value = "0", inclusive = true, message = "Purchase price cannot be negative")
         @Digits(integer = 15, fraction = 4)
         BigDecimal purchasePrice,
-    @NotNull(message = "Transaction date is required") OffsetDateTime transactionDate) {}
+    @NotNull(message = "Transaction date is required") LocalDate transactionDate) {}

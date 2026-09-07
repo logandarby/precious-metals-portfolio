@@ -1,5 +1,6 @@
 package com.example.preciousmetals;
 
+import com.example.preciousmetals.valuation.PortfolioValuationProperties;
 import java.util.List;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(CorsProperties.class)
+@EnableConfigurationProperties({CorsProperties.class, PortfolioValuationProperties.class})
 public class WebSecurityConfig {
   @Bean
   @SuppressWarnings("unused")

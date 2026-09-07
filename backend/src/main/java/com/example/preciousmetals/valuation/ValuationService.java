@@ -82,7 +82,7 @@ public class ValuationService {
       }
     }
 
-    return new ValuationResult(totalValue, costBasis, gain, returnPercent, allocation);
+    return new ValuationResult(totalValue, costBasis, gain, returnPercent, allocation, asOf);
   }
 
   public static BigDecimal toTroyOunces(Transaction transaction) {
